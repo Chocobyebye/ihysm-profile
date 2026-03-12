@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ihysm</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="rain-container" id="rain"></div>
+    <div id="ripple-container"></div>
+
+    <div class="intro-screen" id="intro">
+        <div class="half half-left"></div>
+        <div class="half half-right"></div>
+        <button id="start-btn">▶</button>
+    </div>
+
+    <div class="profile-card" id="profile">
+        <div class="avatar-wrapper">
+            <img src="./images/avatar/008.jpg" alt="Avatar" id="avatar-btn" class="avatar">
+            <span class="play-icon" id="play-icon">▶</span>
+        </div>
+        
+        <h1>minux</h1>
+        <p>Cái gì không biết thì mình nói đại</p>
+        
+        <div class="music-player-controls">
+            
+            <div class="inline-volume">
+                <div class="inline-volume-wrapper">
+                    <input type="range" id="volume-slider" min="0" max="100" value="50">
+                </div>
+                <span class="volume-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                    </svg>
+                </span>
+            </div>
+
+            <div class="music-progress">
+                <span id="current-time">0:00</span>
+                <input type="range" id="progress-bar" min="0" max="100" value="0">
+                <span id="total-time">0:00</span>
+            </div>
+
+        </div>
+
+        <div class="social-links">
+            <a href="https://www.facebook.com/bbydcry" target="_blank" title="Facebook"><img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="FB"></a>
+            <a href="https://www.youtube.com/@minux.mz9" target="_blank" title="YouTube"><img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="YT"></a>
+            <a href="https://www.tiktok.com/@nbbydcry" target="_blank" title="TikTok"><img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png" alt="TikTok"></a>
+            <a href="https://discord.com/users/869968741285363722" target="_blank" title="Discord"><img src="https://cdn-icons-png.flaticon.com/512/5968/5968756.png" alt="Discord"></a>
+        </div>
+        
+        <audio id="my-audio" src="./sounds/最后一页 - Dave.mp3" loop></audio>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
