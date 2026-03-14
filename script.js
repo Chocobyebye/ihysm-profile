@@ -314,7 +314,6 @@ function createSegments(x1, y1, x2, y2, displace) {
     }
 
     // 3. Tạo tia sét & Lưu lại bản sao làm Vết nám
-});
 
 function animateCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
