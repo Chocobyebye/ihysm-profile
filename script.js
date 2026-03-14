@@ -308,46 +308,12 @@ function createSegments(x1, y1, x2, y2, displace) {
     build(x1, y1, x2, y2, displace);
     return segments;
 }
-
-window.addEventListener('mousedown', (e) => {
-    // 1. Ánh sáng lóe tròn (Đã tăng size lên 250 để lan tỏa rộng hơn)
-    flashes.push({
-        x: e.clientX, y: e.clientY,
-        life: 1.0, decay: 0.06, size: 250 
-    });
-
-    scorches.push({
-        type: 'circle', // Phân loại là hình tròn
-        x: e.clientX, y: e.clientY,
-        size: 120,      // Kích thước vết nám (nhỏ hơn vệt lóe một chút cho thật)
-        life: 1.0,
-        decay: 0.0015   // Tốc độ mờ đi (siêu chậm)
-    });
-
     // 2. Tạo vụ nổ bụi sáng tại điểm click
     for(let i = 0; i < 15; i++) {
         particles.push(createParticle(e.clientX, e.clientY, true));
     }
 
     // 3. Tạo tia sét & Lưu lại bản sao làm Vết nám
-    const numBolts = Math.floor(Math.random() * 2) + 4; 
-    for (let b = 0; b < numBolts; b++) {
-        const angle = Math.random() * Math.PI * 2; 
-        const length = 60 + Math.random() * 100; 
-        const endX = e.clientX + Math.cos(angle) * length;
-        const endY = e.clientY + Math.sin(angle) * length;
-        
-        const segments = createSegments(e.clientX, e.clientY, endX, endY, length / 2.5);
-        
-        bolts.push({ segments, life: 1.0, decay: 0.08, thickness: 1.2 });
-        
-        scorches.push({
-            segments: JSON.parse(JSON.stringify(segments)), 
-            life: 1.0, 
-            decay: 0.002, // Giảm tốc độ mờ hơn nữa (~8-10 giây mới mất)
-            thickness: 1.5
-        });
-    }
 });
 
 function animateCanvas() {
@@ -363,45 +329,9 @@ for (let i = scorches.length - 1; i >= 0; i--) {
     s.life -= s.decay;
     if (s.life <= 0) { scorches.splice(i, 1); continue; }
 
-    if (s.type === 'circle') {
-        // VẼ VẾT NÁM TRÒN (Cái bóng của vệt lóe)
-        const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size);
-        grad.addColorStop(0, `rgba(0, 0, 0, ${s.life * 1})`); // Tâm đen mờ
-        grad.addColorStop(1, `rgba(0, 0, 0, 0)`);             // Viền trong suốt
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-        ctx.fill();
-    } else {
-        // VẼ VẾT NÁM SÉT (Logic cũ của bạn)
-        ctx.beginPath();
-        ctx.lineWidth = s.thickness;
-        ctx.strokeStyle = `rgba(0, 0, 0, ${s.life * 0.5})`; 
-        s.segments.forEach(seg => {
-            ctx.moveTo(seg.x1, seg.y1);
-            ctx.lineTo(seg.x2, seg.y2);
-        });
         ctx.stroke();
     }
 }
-
-    // --- BƯỚC 2: BẬT HIỆU ỨNG SÁNG CHO SÉT VÀ FLASH ---
-    ctx.globalCompositeOperation = 'lighter'; 
-
-    // Vẽ Flash lóe sáng (HÌNH TRÒN & GRADIENT CHÂN THỰC)
-    for (let i = flashes.length - 1; i >= 0; i--) {
-        const f = flashes[i];
-        f.life -= f.decay;
-        if (f.life <= 0) { flashes.splice(i, 1); continue; }
-
-        const grad = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.size);
-        grad.addColorStop(0, `rgba(255, 255, 220, ${f.life * 0.25})`); 
-        grad.addColorStop(1, `rgba(255, 255, 220, 0)`);
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
-        ctx.fill();
-    }
 
     // Vẽ Hạt bụi sáng
     for (let i = particles.length - 1; i >= 0; i--) {
@@ -416,26 +346,7 @@ for (let i = scorches.length - 1; i >= 0; i--) {
     }
 
     // Vẽ Tia sét bằng Nét kép
-    for (let i = bolts.length - 1; i >= 0; i--) {
-        const bolt = bolts[i];
-        bolt.life -= bolt.decay; 
-        if (bolt.life <= 0) { bolts.splice(i, 1); continue; }
 
-        const alpha = Math.min(1, bolt.life * (0.6 + Math.random() * 0.4));
-        
-        ctx.beginPath();
-        ctx.lineWidth = bolt.thickness;
-        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-        bolt.segments.forEach(seg => {
-            ctx.moveTo(seg.x1, seg.y1);
-            ctx.lineTo(seg.x2, seg.y2);
-        });
-        ctx.stroke();
-
-        ctx.lineWidth = bolt.thickness * 3;
-        ctx.strokeStyle = `rgba(255, 215, 0, ${alpha * 0.3})`;
-        ctx.stroke();
-    }
     
     requestAnimationFrame(animateCanvas);
 }
