@@ -131,3 +131,157 @@ body {background-image: linear-gradient(rgba(0, 0, 0, 0.908), rgba(0, 0, 0, 0.79
 
 .domino-letter {font-family: 'Lobster Two', sans-serif; font-size: 32px; font-weight: 700; font-style: italic; color: #fff;text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #00bfff; display: inline-block; animation: domino-wave 3s infinite; }
 @keyframes domino-wave {0%, 25%, 100% { transform: scale(1) translateY(0); color: #cbfff2; text-shadow: 0 0 5px #0ff, 0 0 10px #0ff; }12.5% { transform: scale(1.4) translateY(-3px); color: rgba(225, 168, 255, 0.673); text-shadow: 0 0 10px rgb(89, 0, 255), 0 0 20px rgb(0, 221, 255), 0 0 40px #fff; }}
+
+/* ================================================= */
+/* 7. NÚT CHUYỂN ĐỔI THU/PHÓNG (DÙNG ICON SVG)      */
+/* ================================================= */
+#toggle-size-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent; /* Nền trong suốt */
+    border: none; /* !!! QUAN TRỌNG: Xóa bỏ viền cũ !!! */
+    backdrop-filter: blur(5px); /* Hiệu ứng kính mờ cho nút */
+    border-radius: 8px; /* Bo góc nhẹ */
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+/* CSS cho icon SVG bên trong nút */
+#toggle-size-btn svg {
+    width: 20px; /* Tăng kích thước icon lên tí nhìn cho rõ */
+    height: 20px;
+}
+
+/* Hiệu ứng hover cho nút */
+#toggle-size-btn:hover {
+    background: transparent; /* Nền sáng nhẹ lên */
+    color: #ffffff; /* Icon sáng trắng rực */
+    transform: scale(1.1); /* Hơi phóng to nhẹ */
+}
+
+/* Classes cho Animation thu/phóng */
+/* Thẻ to khi bấm X: scale về 0 */
+.profile-card.shrink {
+    transition: all 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) !important;
+    transform: perspective(1000px) scale(0) !important;
+    opacity: 0 !important;
+}
+
+/* Thẻ mini khi bung ra và bay rơi xuống đáy */
+.profile-card.minimized.rise-up {
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    opacity: 1 !important;
+    bottom: 30px !important; /* Điểm dừng trên màn hình */
+    transform: translateX(-50%) scale(1) !important; /* Phóng to lên */
+}
+
+/* Thẻ lớn khi bung to */
+.profile-card.show.grow {
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    opacity: 1 !important;
+    transform: perspective(1000px) scale(1) rotateX(0) rotateY(0) !important;
+}
+
+/* Giao diện Mini-player khi thu nhỏ */
+/* Ẩn các thành phần không cần thiết ở chế độ nhỏ */
+.profile-card.minimized .name,
+.profile-card.minimized .bio,
+.profile-card.minimized .social-links,
+.profile-card.minimized .inline-volume,
+.profile-card.minimized .song-title-box,
+.profile-card.minimized #bubble-source,
+.profile-card.minimized .discord-frame,
+.profile-card.minimized .playlist-dropdown,
+.profile-card.minimized .play-icon {
+    display: none !important;
+}
+
+/* Biến thẻ thành dạng thanh ngang nằm dưới đáy */
+.profile-card.minimized {
+    position: fixed !important;
+    top: auto !important;
+    left: 50% !important; /* Căn giữa màn hình */
+    transform: translateX(-50%) !important; /* Căn giữa tuyệt đối */
+    width: 90% !important;
+    max-width: 450px !important;
+    height: 65px !important;
+    padding: 0 20px !important;
+    border-radius: 40px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 15px !important;
+    z-index: 9999;
+    opacity: 0; /* Giấu trước khi animation */
+    bottom: -100px; /* Giấu xuống dưới mép */
+}
+
+/* Sắp xếp lại vị trí từ trái sang phải */
+.profile-card.minimized .avatar-wrapper {
+    order: 1;
+    width: 45px;
+    height: 45px;
+    margin: 0;
+    flex-shrink: 0;
+}
+.profile-card.minimized .avatar {
+    width: 100%;
+    height: 100%;
+}
+.profile-card.minimized .music-player-controls {
+    order: 2;
+    margin: 0;
+    width: auto;
+    flex-grow: 1;
+}
+.profile-card.minimized .music-progress {
+    width: 100%;
+    margin: 0;
+}
+.profile-card.minimized .music-nav-row {
+    order: 3;
+    margin: 0;
+    width: auto;
+}
+.profile-card.minimized .nav-buttons {
+    gap: 5px;
+}
+.profile-card.minimized #toggle-size-btn {
+    order: 4;
+    position: static !important; /* Gỡ bỏ absolute để tự động xếp hàng ngang */
+    padding: 0 5px;
+    margin-left: 5px;
+}
+
+/* ================================================= */
+/* 9. HIỆU ỨNG SẤM CHỚP BACKGROUND (ĐÃ TỐI ƯU)      */
+/* ================================================= */
+#lightning-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #a7a7a7; /* Màu trắng cho tia sét */
+    opacity: 0; /* Mặc định là trong suốt */
+    z-index: -2; /* !!! QUAN TRỌNG: Nằm sau TẤT CẢ nội dung và thẻ tên !!! */
+    pointer-events: none; /* Không cản trở chuột bấm */
+    /* Hiệu ứng mờ dần cực nhanh */
+    transition: opacity 0.1s cubic-bezier(0.55, 0.085, 0.68, 0.53); 
+}
+
+/* Class được kích hoạt bằng JS để tạo một cú "nháy" */
+#lightning-overlay.flash {
+    opacity: 0.3; /* !!! Giảm độ sáng: chớp mờ, tinh tế !!! */
+    transition: none !important; /* Hiện lên tức thì */
+}
