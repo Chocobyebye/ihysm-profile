@@ -74,7 +74,7 @@ introScreen.appendChild(bubblesContainer);
 
 function createBubbles() {
     bubblesContainer.innerHTML = '';
-    const bubbleCount = 100; // Số lượng bong bóng
+    const bubbleCount = 40; // Số lượng bong bóng
 
     for (let i = 0; i < bubbleCount; i++) {
         const bubble = document.createElement('div');
@@ -84,7 +84,7 @@ function createBubbles() {
         // Công thức: Math.random() * (Khoảng chênh lệch) + (Kích thước nhỏ nhất)
         // Ví dụ dưới đây: Nhỏ nhất là 10px, Lớn nhất là 10 + 40 = 50px
         // =========================================================
-        const size = Math.random() * 70 + 40; 
+        const size = Math.random() * 120 + 80; 
         
         bubble.style.width = size + 'px';
         bubble.style.height = size + 'px';
@@ -406,3 +406,160 @@ document.addEventListener('click', function(e) {
         });
     }
 });
+
+// ========================================================= //
+// 6. XỬ LÝ NÚT THU NHỎ / PHÓNG TO CARD & ANIMATION BAY      //
+// ========================================================= //
+const toggleSizeBtn = document.getElementById('toggle-size-btn');
+let isMinimized = false;
+
+// ĐỊNH NGHĨA SVG MỚI CHUYÊN NGHIỆP VÀ CHUẨN XÁC
+// Icon Dấu X hình học tách rời
+const minimizeSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+// Icon 4 góc phóng to tách rời (Frame corners)
+const maximizeSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3H6a3 3 0 0 0-3 3v4"></path><path d="M14 3h4a3 3 0 0 1 3 3v4"></path><path d="M14 21h4a3 3 0 0 0 3-3v-4"></path><path d="M10 21H6a3 3 0 0 1-3-3v-4"></path></svg>`;
+
+// Khởi tạo icon mặc định (Minimize) khi load trang
+if (toggleSizeBtn) {
+    toggleSizeBtn.innerHTML = minimizeSvg;
+    toggleSizeBtn.title = "Thu nhỏ";
+}
+
+if (toggleSizeBtn) {
+    toggleSizeBtn.addEventListener('click', () => {
+        if (!isMinimized) {
+            // --- KHI BẤM X (THU NHỎ) ---
+            if (typeof isCardReady !== 'undefined') isCardReady = false; // Tắt ngay hover 3D
+            
+            // 1. Gán transition trước để trình duyệt chuẩn bị
+            profileCard.style.transition = 'all 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53)';
+            
+            // Ép trình duyệt reflow (đọc lại CSS) để không bị skip animation
+            void profileCard.offsetWidth; 
+            
+            // Dùng setTimeout 10ms để ép trình duyệt chạy animation mượt mà thay vì giật cục
+            setTimeout(() => {
+                profileCard.style.transform = 'perspective(1000px) scale(0) rotateX(0) rotateY(0)';
+                profileCard.style.opacity = '0';
+            }, 10);
+
+            // 2. Chờ 500ms thu nhỏ xong, setup thẻ nhỏ
+            setTimeout(() => {
+                profileCard.classList.add('minimized');
+                // THAY ĐỔI ICON SANG SVG PHÓNG TO MỚI (CHỈ 4 GÓC)
+                toggleSizeBtn.innerHTML = maximizeSvg;
+                
+                const playlistDropdownEl = document.getElementById('playlist-dropdown');
+                if (playlistDropdownEl) playlistDropdownEl.classList.remove('open');
+                
+                profileCard.style.transition = 'none';
+                profileCard.style.left = '50%'; 
+                profileCard.style.bottom = '-100px'; // Giấu xuống dưới
+                profileCard.style.transform = 'translateX(-50%)';
+                
+                // 3. Kéo thẻ nhỏ trượt lên
+                setTimeout(() => {
+                    profileCard.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                    profileCard.style.opacity = '1';
+                    profileCard.style.bottom = '30px'; 
+                    isMinimized = true;
+                }, 50);
+
+            }, 100);
+
+        } else {
+            // --- KHI BẤM PHÓNG TO ---
+            // 1. Thẻ nhỏ trượt ngược xuống dưới và biến mất
+            profileCard.style.transition = 'all 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53)';
+            profileCard.style.bottom = '-100px';
+            profileCard.style.opacity = '0';
+
+            // 2. Chờ trượt xong, setup thẻ lớn ở giữa màn hình
+            setTimeout(() => {
+                profileCard.classList.remove('minimized');
+                toggleSizeBtn.innerHTML = minimizeSvg;
+                
+                profileCard.style.transition = 'none';
+                profileCard.style.left = ''; 
+                profileCard.style.bottom = '';
+                profileCard.style.transform = 'perspective(1000px) scale(0) rotateX(0) rotateY(0)';
+                
+                // 3. Bung thẻ to ra (kết hợp delay 50ms để ép reflow)
+                setTimeout(() => {
+                    profileCard.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                    profileCard.style.opacity = '1';
+                    profileCard.style.transform = 'perspective(1000px) scale(1) rotateX(0) rotateY(0)';
+                    isMinimized = false;
+                    
+                    setTimeout(() => {
+                        if (typeof isCardReady !== 'undefined') isCardReady = true;
+                    }, 600);
+                }, 50);
+            }, 500);
+        }
+    });
+}
+// ========================================================= //
+// 7. XỬ LÝ HIỆU ỨNG SẤM CHỚP BACKGROUND LÓE 2 LẦN           //
+// ========================================================= //
+const lightningOverlay = document.getElementById('lightning-overlay');
+
+// 1. Cấu hình thời gian trễ ngẫu nhiên giữa các lần sấm chớp
+const MIN_DELAY_BETWEEN_LIGHTNING = 4000; // 10 giây tối thiểu
+const MAX_DELAY_BETWEEN_LIGHTNING = 15000; // 45 giây tối đa
+
+// 2. Cấu hình thời gian cho một cú "chớp lóe 2 lần" (Double Flash)
+const FIRST_FLASH_DURATION = 200;     // Độ dài cú chớp 1 (mili giây) - cực nhanh
+const GAP_BETWEEN_FLASHES = 80;      // Khoảng nghỉ giữa 2 cú chớp
+const SECOND_FLASH_DURATION = 30;    // Độ dài cú chớp 2 (dài hơn tí)
+
+let isLightningActive = false; // Cờ ngăn chặn các tia sét đè lên nhau
+
+/**
+ * Hàm thực hiện một cú chớp lóe 2 lần (Double Flash)
+ */
+function triggerLightning() {
+    if (!lightningOverlay || isLightningActive) return;
+
+    isLightningActive = true; // Bật cờ đang chớp
+
+    // --- CÚ CHỚP LẦN 1 ---
+    lightningOverlay.classList.add('flash');
+
+    setTimeout(() => {
+        // Tắt chớp lần 1
+        lightningOverlay.classList.remove('flash');
+
+        // --- KHOẢNG NGHỈ GIỮA 2 CÚ CHỚP ---
+        setTimeout(() => {
+
+            // --- CÚ CHỚP LẦN 2 ---
+            lightningOverlay.classList.add('flash');
+
+            setTimeout(() => {
+                // Tắt chớp lần 2 và hoàn tất chuỗi
+                lightningOverlay.classList.remove('flash');
+                isLightningActive = false; // Hạ cờ
+                scheduleNextLightning(); // Chỉ lên lịch tia sét mới SAU KHI chớp xong
+            }, SECOND_FLASH_DURATION);
+
+        }, GAP_BETWEEN_FLASHES);
+
+    }, FIRST_FLASH_DURATION);
+}
+
+/**
+ * Hàm sắp xếp lần sấm chớp tiếp theo một cách ngẫu nhiên
+ */
+function scheduleNextLightning() {
+    if (isLightningActive) return; // Đảm bảo không lên lịch khi đang chớp
+
+    const randomDelay = Math.random() * (MAX_DELAY_BETWEEN_LIGHTNING - MIN_DELAY_BETWEEN_LIGHTNING) + MIN_DELAY_BETWEEN_LIGHTNING;
+
+    setTimeout(() => {
+        triggerLightning();
+    }, randomDelay);
+}
+
+// Bắt đầu hiệu ứng sấm chớp khi trang web đã load xong
+window.addEventListener('load', scheduleNextLightning);
